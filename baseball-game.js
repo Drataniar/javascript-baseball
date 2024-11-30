@@ -297,19 +297,35 @@ function calculateStatistics(statistics){
   }
   const userWins = statistics.filter(userWin);
 
+  const result = statistics.reduce((accu, stat) => { 
+    if(accu.timeMax < stat.maxTime){
+      accu.timeMax = stat.maxTime;
+      accu.timeMaxId = [stat.id];
+    }else if(accu.timeMax === stat.maxTime){
+      accu.timeMaxId.push(stat.id);
+    }else if(accu.timeMin > stat.maxTime){
+      accu.timeMin = stat.maxTime;
+      accu.timeMinId = [stat.id];
+    }else if(accu.timeMin === stat.maxTime){
+      accu.timeMinId.push(stat.id);
+    }
+    return accu;
+  }, {timeMax : 0, timeMaxId : [], timeMin : 0, timeMinId : []});
+  console.log('result',result);
 
 
   console.log(`총 게임 횟수: ${statistics.length}`);
   console.log(`사용자 총 승리 횟수: ${userWins.length}`);
   console.log(`컴퓨터 총 승리 횟수: ${statistics.length - userWins.length}`);
+  console.log(`가장 큰 값으로 적용된 입력횟수 : ${result.timeMax} / ID : ${result.timeMaxId}`);
+  console.log(`가장 적은 값으로 적용된 입력횟수 : ${result.timeMin} / ID : ${result.timeMinId}`);
 
     // console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${minWinGames}`);
     // console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${maxWinGames}`);
     
     // console.log(`적용된 입력횟수 평균: ${d}`);
     // console.log(`가장 많이 적용된 입력횟수: ${d} (게임 ID: ${id})`);
-    // console.log(`가장 큰 값으로 적용된 입력횟수: ${d} (게임 ID: ${id})`);
-    // console.log(`가장 적은 값으로 적용된 입력횟수: ${d} (게임 ID: ${id})`);
+
     // console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${d}`);
     // console.log(`사용자가 가장 많이 승리한 입력횟수: ${d}`);
 

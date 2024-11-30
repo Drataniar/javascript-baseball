@@ -1,3 +1,4 @@
+const { stat } = require('fs/promises');
 const readline = require('readline');
 
 // readline 인터페이스 설정
@@ -121,15 +122,16 @@ async function playGame() {
     let gameLogsArray = [];
     
     // 통계
-    let statistics = {
-        totalPlay : 0,
-        computerWin : 0,
-        userWin : 0,
-        userWinMin : Infinity, // 가장 적은 횟수
-        userWinMinText : "0",
-        userWinMax : -Infinity, // 가장 많은 횟수,
-        userWinMaxText : "0",
-    };
+    // let statistics = {
+    //     totalPlay : 0,
+    //     computerWin : 0,
+    //     userWin : 0,
+    //     userWinMin : Infinity, // 가장 적은 횟수
+    //     userWinMinText : "0",
+    //     userWinMax : -Infinity, // 가장 많은 횟수,
+    //     userWinMaxText : "0",
+    // };
+    let statistics=[];
     
     let startNum = await getUserNum('게임을 새로 시작하려면 1, 기록을 보려면 2, 통계를 보려면 3, 종료하려면 9을 입력하세요.');
   
@@ -144,7 +146,12 @@ async function playGame() {
 
         if(startNum === '1'){ // 1입력 후 게임 진행되는 동안의 반복문
             gameId++;
-            statistics.totalPlay = gameId;
+            let stats = {
+              id : gameId,
+              maxTime : 0,
+              rounds : 0,
+              winner : "",
+            };
 
             const computerNumber = computerSelectNumber(3, 9); // 1~9까지의 중복되지 않는 3자리 숫자
             console.log(`컴퓨터가 숫자를 뽑았습니다. ${computerNumber}`);
@@ -168,6 +175,7 @@ async function playGame() {
                     gameAllText +=`\n사용자 기권\n게임을 종료합니다!\n`
                     let endTime = recordDate();
                     gameInfoText += ` 종료시간: ${endTime} / 최대 도전 횟수: ${maxTime} / 도전 횟수: ${time} / 승리자 : 컴퓨터(사용자 기권)`;
+                    stats.winner = "computer";
                     break;
                 }
     
@@ -206,19 +214,19 @@ async function playGame() {
                     gameAllText +=`\n3개의 숫자를 모두 맞히셨습니다.\n\n사용자가 승리하였습니다.\n`;
 
                     // 통계 업테이트
-                    let userAttempts = time + 1; // 승리 시도 횟수
+                    // let userAttempts = time + 1; // 승리 시도 횟수
                     
-                    if (userAttempts < statistics.userWinMin) { // 가장 적은 횟수
-                        statistics.userWinMin = userAttempts;
-                        statistics.gameId = gameId;
-                        statistics.userWinMinText = `${statistics.userWinMin} (게임 ID: ${statistics.gameId})`
-                    }
-                    if (userAttempts > statistics.userWinMax) { // 가장 많은 횟수
-                        statistics.userWinMax = userAttempts;
-                        statistics.gameId = gameId;
-                        statistics.userWinMaxText = `${statistics.userWinMax} (게임 ID: ${statistics.gameId})`
-                    }
-                    statistics.userWin++;
+                    // if (userAttempts < statistics.userWinMin) { // 가장 적은 횟수
+                    //     statistics.userWinMin = userAttempts;
+                    //     statistics.gameId = gameId;
+                    //     statistics.userWinMinText = `${statistics.userWinMin} (게임 ID: ${statistics.gameId})`
+                    // }
+                    // if (userAttempts > statistics.userWinMax) { // 가장 많은 횟수
+                    //     statistics.userWinMax = userAttempts;
+                    //     statistics.gameId = gameId;
+                    //     statistics.userWinMaxText = `${statistics.userWinMax} (게임 ID: ${statistics.gameId})`
+                    // }
+                    stats.winner = "user";
 
                     break;
                 }
@@ -230,14 +238,17 @@ async function playGame() {
                 gameInfoText += `종료시간: ${endTime} / 최대 도전 횟수: ${maxTime} / 사용자의 도전 횟수: ${time} / 승리자 : 컴퓨터`;
                 console.log(`\n컴퓨터가 승리하였습니다.`);
                 gameAllText +=`\n컴퓨터가 승리하였습니다.\n`;
-                statistics.computerWin++
+                stats.winner = "computer";
             }
     
+            stats.rounds = time;
+            stats.maxTime = maxTime;
             console.log("-------게임 종료--------");
             gameAllText +=`-------게임 종료-------\n`;
             gameLog.info = gameInfoText;
             gameLog.allText = gameAllText;
             gameLogsArray.push({...gameLog});
+            statistics.push({...stats});
             
             // startNum = await getUserNum('게임을 새로 시작하려면 1, 기록을 보려면 2, 통계를 보려면 3, 종료하려면 9을 입력하세요.');
         }else if(startNum === '2'){
@@ -265,20 +276,62 @@ function calculateGameLog(gameLogsArray){
     });
 }
 
+function findMinMax(key, data) {
+  const datas = data.map((node) => node[key]);
+  return {
+    min: Math.min(...datas),
+    max: Math.max(...datas),
+  }
+}
+
 // 통계 
 function calculateStatistics(statistics){
-    console.log(`총 게임 횟수: ${statistics.totalPlay}`);
-    console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${statistics.userWinMinText}`);
-    console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${statistics.userWinMaxText}`);
-    console.log(`컴퓨터 총 승리 횟수: ${statistics.computerWin}`);
-    console.log(`사용자 총 승리 횟수: ${statistics.userWin}`);
+  statistics.forEach(stat => {
+    console.log(`${stat.id} / ${stat.maxTime} / ${stat.winner} / ${stat.rounds}`);
+  });
 
-    // 적용된 입력횟수 평균: 5회
-    // 가장 많이 적용된 입력횟수: 5회 - [1]
-    // 가장 큰 값으로 적용된 입력횟수: 5회 - [1]
-    // 가장 적은 값으로 적용된 입력횟수: 5회 - [1]
-    // 컴퓨터가 가장 많이 승리한 입력횟수: 0회
-    // 사용자가 가장 많이 승리한 입력횟수: 5회
+  let userWin = statistics.filter(stat => {stat["winner"] === "user"});
+  // let userWinMin = ;
+  // let userWinMax = ;
+  userWin.forEach((stat) => {
+    console.log(`userWin ${stat}`);
+    
+  })
+
+  const {userRoundsMin, userRoundsMax} = findMinMax("rouns", userWin)
+  // 최소 및 최대 횟수에 해당하는 게임 ID 찾기
+  const minWinGames = userWin.filter(stat => stat.rounds === userRoundsMin).map(stat => stat.id);
+  const maxWinGames = userWin.filter(stat => stat.rounds === userRoundsMax).map(stat => stat.id);
+  
+
+  console.log(`총 게임 횟수: ${statistics.length}`);
+  console.log(`사용자 총 승리 횟수: ${userWin.length}`);
+  console.log(`컴퓨터 총 승리 횟수: ${statistics.length - userWin.length}`);
+
+    console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${minWinGames}`);
+    console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${maxWinGames}`);
+    
+    // console.log(`적용된 입력횟수 평균: ${d}`);
+    // console.log(`가장 많이 적용된 입력횟수: ${d} (게임 ID: ${id})`);
+    // console.log(`가장 큰 값으로 적용된 입력횟수: ${d} (게임 ID: ${id})`);
+    // console.log(`가장 적은 값으로 적용된 입력횟수: ${d} (게임 ID: ${id})`);
+    // console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${d}`);
+    // console.log(`사용자가 가장 많이 승리한 입력횟수: ${d}`);
+
+    // 변수
+    // 총 게임 횟수
+    // 사용자가 승리한 게임 중 가장 적은 횟수 / ID담은 배열
+    // 사용자가 승리한 게임 중 가장 많은 횟수 / ID담은 배열
+
+    // statistics=[
+    //   {
+    //     id : 0,
+    //     입력횟수 : 0,
+    //     라운드수 : 0,
+    //     승리자 : "",
+    //   }
+    // ]
+
 
     // 입력한 숫자 : 입력횟수
     // 승리한 횟수 : 승리횟수

@@ -303,7 +303,8 @@ function calculateStatistics(statistics){
       accu.timeMaxId = [stat.id];
     }else if(accu.timeMax === stat.maxTime){
       accu.timeMaxId.push(stat.id);
-    }else if(accu.timeMin > stat.maxTime){
+    }
+    if(accu.timeMin === 0 || accu.timeMin > stat.maxTime){
       accu.timeMin = stat.maxTime;
       accu.timeMinId = [stat.id];
     }else if(accu.timeMin === stat.maxTime){

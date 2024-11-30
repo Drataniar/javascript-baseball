@@ -290,26 +290,21 @@ function calculateStatistics(statistics){
     console.log(`${stat.id} / ${stat.maxTime} / ${stat.winner} / ${stat.rounds}`);
   });
 
-  let userWin = statistics.filter(stat => {stat["winner"] === "user"});
-  // let userWinMin = ;
-  // let userWinMax = ;
-  userWin.forEach((stat) => {
-    console.log(`userWin ${stat}`);
-    
-  })
+  function userWin(el){
+    if(el.winner === "user"){
+      return true;
+    }
+  }
+  const userWins = statistics.filter(userWin);
 
-  const {userRoundsMin, userRoundsMax} = findMinMax("rouns", userWin)
-  // 최소 및 최대 횟수에 해당하는 게임 ID 찾기
-  const minWinGames = userWin.filter(stat => stat.rounds === userRoundsMin).map(stat => stat.id);
-  const maxWinGames = userWin.filter(stat => stat.rounds === userRoundsMax).map(stat => stat.id);
-  
+
 
   console.log(`총 게임 횟수: ${statistics.length}`);
-  console.log(`사용자 총 승리 횟수: ${userWin.length}`);
-  console.log(`컴퓨터 총 승리 횟수: ${statistics.length - userWin.length}`);
+  console.log(`사용자 총 승리 횟수: ${userWins.length}`);
+  console.log(`컴퓨터 총 승리 횟수: ${statistics.length - userWins.length}`);
 
-    console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${minWinGames}`);
-    console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${maxWinGames}`);
+    // console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${minWinGames}`);
+    // console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${maxWinGames}`);
     
     // console.log(`적용된 입력횟수 평균: ${d}`);
     // console.log(`가장 많이 적용된 입력횟수: ${d} (게임 ID: ${id})`);

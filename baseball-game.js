@@ -389,7 +389,7 @@ function calculateStatistics(statistics){
 
     const computerWinFrequency = checkMaxFrequency(computerWins,"maxTime");
 
-const userWinFrequency = checkMaxFrequency(userWins,"rounds");
+    const userWinFrequency = checkMaxFrequency(userWins,"rounds");
 
     console.log(`총 게임 횟수: ${statistics.length}`);
     console.log(`사용자 총 승리 횟수: ${userWins.length}`);

@@ -326,7 +326,7 @@ function calculateStatistics(statistics){
         userMinWinIdText+=`[${stat.id}] `;
     });
 
-
+    // 가장 큰 / 작은 값의 입력횟수
     const calculateTimes = statistics.reduce((accu, stat) => { 
         if(accu.timeMax < stat.maxTime){
             accu.timeMax = stat.maxTime;
@@ -344,16 +344,24 @@ function calculateStatistics(statistics){
 
         return accu;
     }, {allTimes: [], allTimesId: [], timeMax : 0, timeMaxId : [], timeMin : 0, timeMinId : []});
+    // console.log('calculateTimes',calculateTimes.allTimes);
 
-    console.log('calculateTimes',calculateTimes.allTimes);
+    // 입력횟수 평균 값
+    const averageTime = (calculateTimes.allTimes.reduce((sum, times) => sum + times.maxTime, 0) / calculateTimes.allTimes.length).toFixed(1);
 
-    const averageTime = (calculateTimes.allTimes.reduce((sum, times) => sum + times.maxTime, 0) / calculateTimes.allTimes.length).toFixed(0);
-
+    // 입력횟수 중 가장 많이 적용된 값
     const applyTimes = calculateTimes.allTimes.reduce((apply, allTime) => {
         apply[allTime.maxTime] = (apply[allTime.maxTime] || 0)+1;
         return apply;
     }, {});
-
+    let maxKey = null;
+    let maxValue = 0;
+    Object.entries(applyTimes).forEach(([key, value]) => {
+        if (value > maxValue) {
+            maxValue = value;
+            maxKey = key;
+        }
+    });
     console.log('applyTimes',applyTimes);
 
 
@@ -368,7 +376,7 @@ function calculateStatistics(statistics){
 
     //현선
     console.log(`적용된 입력횟수 평균: ${averageTime}`);
-    // console.log(`가장 많이 적용된 입력횟수: ${d} (게임 ID: ${id})`);
+    console.log(`가장 많이 적용된 입력횟수 : ${maxKey}`);
 
     //재욱
     // console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${d}`);

@@ -400,23 +400,36 @@ function calculateStatistics(statistics){
     }, {allTimes: [], allTimesId: [], timeMax : 0, timeMaxId : [], timeMin : 0, timeMinId : []});
     // console.log('calculateTimes',calculateTimes.allTimes);
 
+    const calculateMaxTimes = calculateTimes.allTimes.reduce((accu, allTime) => { 
+        if(accu.maxTime < allTime.maxTime){
+            accu.applyMaxTime = allTime.maxTime;
+            accu.applyMaxTimeId = [allTime.id];
+        }else if(accu.maxTime === allTime.maxTime){
+            accu.applyMaxTimeId.push(allTime.id);
+        }
+
+        return accu;
+    }, {applyMaxTime: 0, applyMaxTimeId: []});
+    console.log('calculateMaxTimes',calculateMaxTimes);
+    
+
     // 입력횟수 평균 값
     const averageTime = (calculateTimes.allTimes.reduce((sum, times) => sum + times.maxTime, 0) / calculateTimes.allTimes.length).toFixed(1);
 
     // 입력횟수 중 가장 많이 적용된 값
-    const applyTimes = calculateTimes.allTimes.reduce((apply, allTime) => {
-        apply[allTime.maxTime] = (apply[allTime.maxTime] || 0)+1;
-        return apply;
-    }, {});
-    let maxKey = null;
-    let maxValue = 0;
-    Object.entries(applyTimes).forEach(([key, value]) => {
-        if (value > maxValue) {
-            maxValue = value;
-            maxKey = key;
-        }
-    });
-    console.log('applyTimes',applyTimes);
+    // const applyTimes = calculateTimes.allTimes.reduce((apply, allTime) => {
+    //     apply[allTime.maxTime] = (apply[allTime.maxTime] || 0)+1;
+    //     return apply;
+    // }, {});
+    // let maxKey = null;
+    // let maxValue = 0;
+    // Object.entries(applyTimes).forEach(([key, value]) => {
+    //     if (value > maxValue) {
+    //         maxValue = value;
+    //         maxKey = key;
+    //     }
+    // });
+    // console.log('applyTimes',applyTimes);
 
 
     console.log(`총 게임 횟수: ${statistics.length}`);
@@ -430,7 +443,7 @@ function calculateStatistics(statistics){
 
     //현선
     console.log(`적용된 입력횟수 평균: ${averageTime}`);
-    console.log(`가장 많이 적용된 입력횟수 : ${maxKey}`);
+    // console.log(`가장 많이 적용된 입력횟수 : ${maxKey}`);
 
     //재욱
     console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${checkMaxFrequency(computerWins,"maxTime").maxFrequencyValue} / ID : ${checkMaxFrequency(computerWins,"maxTime").maxFrequencyIdArrayText}`);

@@ -297,6 +297,59 @@ function FindMinMaxInStatics(key, data) {
       return filteredArray;
   }
 
+  function checkMaxFrequency(givenArray,key)
+  {
+    let maxFrequencyValue = 0;
+    let maxFrequency = -1;
+    let maxFrequencyIdArrayText = '';
+    let tempArray=[];
+
+    givenArray.forEach(function(stat){
+        tempArray.push(stat[key]);
+    })
+    
+    tempArray = tempArray.sort();
+
+    let FrequencyCompare ={
+        value : 0,
+        many : 0
+    };
+
+    let checkCompare =[];
+    tempArray.forEach(function(arrayValue,index){
+        if(index===0)
+        {
+            FrequencyCompare.value = arrayValue;
+        }
+        else if(FrequencyCompare.value===arrayValue){
+            FrequencyCompare.many++;
+        }
+        else if(FrequencyCompare.value !== arrayValue){
+            checkCompare.push(FrequencyCompare);
+            FrequencyCompare.value = arrayValue;
+            FrequencyCompare.many = 1;
+        }
+    })
+
+    checkCompare.forEach(function(arrayValue){
+        if(maxFrequency<arrayValue.many){
+            maxFrequency=arrayValue.many;
+            maxFrequencyValue=arrayValue.value;
+        }
+    })
+
+    givenArray.forEach(function(arrayValue){
+        if(arrayValue[key]===maxFrequencyValue){
+            maxFrequencyIdArrayText+=`[${arrayValue.id}]`;
+        }
+    })
+
+    return {
+        maxFrequencyValue : maxFrequencyValue,
+        maxFrequencyIdArrayText : maxFrequencyIdArrayText
+    };
+  }
+
 // 통계 
 function calculateStatistics(statistics){
     statistics.forEach(stat => {
@@ -309,6 +362,7 @@ function calculateStatistics(statistics){
         }
     }
     const userWins = statistics.filter(userWin);
+    const computerWins = filteringStats(statistics,"winner","computer");
 
     const userMaxWin = FindMinMaxInStatics("rounds",userWins).max;
     const userMinWin = FindMinMaxInStatics("rounds",userWins).min;
@@ -379,8 +433,8 @@ function calculateStatistics(statistics){
     console.log(`가장 많이 적용된 입력횟수 : ${maxKey}`);
 
     //재욱
-    // console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${d}`);
-    // console.log(`사용자가 가장 많이 승리한 입력횟수: ${d}`);
+    console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${checkMaxFrequency(computerWins,"maxTime").maxFrequencyValue} / ID : ${checkMaxFrequency(computerWins,"maxTime").maxFrequencyIdArrayText}`);
+    console.log(`사용자가 가장 많이 승리한 입력횟수: ${checkMaxFrequency(userWins,"rounds").maxFrequencyValue} / ID : ${checkMaxFrequency(userWins,"rounds").maxFrequencyIdArrayText}`);
 
     // 변수
     // 총 게임 횟수

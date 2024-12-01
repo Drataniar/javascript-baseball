@@ -310,32 +310,42 @@ function FindMinMaxInStatics(key, data) {
     
     tempArray = tempArray.sort();
 
+    //tempArray.forEach(arr => console.log(arr));
+
     let FrequencyCompare ={
-        value : 0,
+        value : tempArray[0],
         many : 0
     };
 
     let checkCompare =[];
     tempArray.forEach(function(arrayValue,index){
-        if(index===0)
-        {
-            FrequencyCompare.value = arrayValue;
-        }
-        else if(FrequencyCompare.value===arrayValue){
+        
+        if(FrequencyCompare.value===arrayValue){
             FrequencyCompare.many++;
         }
         else if(FrequencyCompare.value !== arrayValue){
             checkCompare.push(FrequencyCompare);
-            FrequencyCompare.value = arrayValue;
-            FrequencyCompare.many = 1;
+            //FrequencyCompare.value = arrayValue;
+            //FrequencyCompare.many = 1;
+            FrequencyCompare = { value: arrayValue, many: 1 };
         }
+
+        if(tempArray.length===index+1)
+            {
+                checkCompare.push(FrequencyCompare);
+            }
     })
 
+    /*checkCompare.forEach(
+        arrayValue => 
+            console.log(`checkvalue : ${arrayValue.value}, checkmany : ${arrayValue.many}`))
+*/
     checkCompare.forEach(function(arrayValue){
         if(maxFrequency<arrayValue.many){
             maxFrequency=arrayValue.many;
             maxFrequencyValue=arrayValue.value;
         }
+        
     })
 
     givenArray.forEach(function(arrayValue){

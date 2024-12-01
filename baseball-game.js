@@ -299,63 +299,75 @@ function FindMinMaxInStatics(key, data) {
 
 // 통계 
 function calculateStatistics(statistics){
-  statistics.forEach(stat => {
-    console.log(`${stat.id} / ${stat.maxTime} / ${stat.winner} / ${stat.rounds}`);
-  });
+    statistics.forEach(stat => {
+        console.log(`${stat.id} / ${stat.maxTime} / ${stat.winner} / ${stat.rounds}`);
+    });
 
-  function userWin(el){
-    if(el.winner === "user"){
-      return true;
+    function userWin(el){
+        if(el.winner === "user"){
+        return true;
+        }
     }
-  }
-  const userWins = statistics.filter(userWin);
+    const userWins = statistics.filter(userWin);
 
-  const userMaxWin = FindMinMaxInStatics("rounds",userWins).max;
-  const userMinWin = FindMinMaxInStatics("rounds",userWins).min;
+    const userMaxWin = FindMinMaxInStatics("rounds",userWins).max;
+    const userMinWin = FindMinMaxInStatics("rounds",userWins).min;
 
-  const userMaxWinArr = filteringStats(userWins,"rounds",userMaxWin);
-  const userMinWinArr = filteringStats(userWins,"rounds",userMinWin);
+    const userMaxWinArr = filteringStats(userWins,"rounds",userMaxWin);
+    const userMinWinArr = filteringStats(userWins,"rounds",userMinWin);
 
-  let userMaxWinIdText = "";
-  userMaxWinArr.forEach(function(stat){
-    userMaxWinIdText+=`[${stat.id}] `;
-  });
+    let userMaxWinIdText = "";
+    userMaxWinArr.forEach(function(stat){
+        userMaxWinIdText+=`[${stat.id}] `;
+    });
 
-  let userMinWinIdText = "";
-  userMinWinArr.forEach(function(stat){
-    userMinWinIdText+=`[${stat.id}] `;
-  });
-
-
-  const result = statistics.reduce((accu, stat) => { 
-    if(accu.timeMax < stat.maxTime){
-      accu.timeMax = stat.maxTime;
-      accu.timeMaxId = [stat.id];
-    }else if(accu.timeMax === stat.maxTime){
-      accu.timeMaxId.push(stat.id);
-    }
-    if(accu.timeMin === 0 || accu.timeMin > stat.maxTime){
-      accu.timeMin = stat.maxTime;
-      accu.timeMinId = [stat.id];
-    }else if(accu.timeMin === stat.maxTime){
-      accu.timeMinId.push(stat.id);
-    }
-    return accu;
-  }, {timeMax : 0, timeMaxId : [], timeMin : 0, timeMinId : []});
-  //console.log('result',result);
+    let userMinWinIdText = "";
+    userMinWinArr.forEach(function(stat){
+        userMinWinIdText+=`[${stat.id}] `;
+    });
 
 
-console.log(`총 게임 횟수: ${statistics.length}`);
-console.log(`사용자 총 승리 횟수: ${userWins.length}`);
-console.log(`컴퓨터 총 승리 횟수: ${statistics.length - userWins.length}`);
-console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${userMaxWin} / ID : ${userMaxWinIdText}`);
-console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${userMinWin} / ID : ${userMinWinIdText}`);
-console.log(`가장 큰 값으로 적용된 입력횟수 : ${result.timeMax} / ID : ${result.timeMaxId}`);
-console.log(`가장 적은 값으로 적용된 입력횟수 : ${result.timeMin} / ID : ${result.timeMinId}`);
+    const calculateTimes = statistics.reduce((accu, stat) => { 
+        if(accu.timeMax < stat.maxTime){
+            accu.timeMax = stat.maxTime;
+            accu.timeMaxId = [stat.id];
+        }else if(accu.timeMax === stat.maxTime){
+            accu.timeMaxId.push(stat.id);
+        }
+        if(accu.timeMin === 0 || accu.timeMin > stat.maxTime){
+            accu.timeMin = stat.maxTime;
+            accu.timeMinId = [stat.id];
+        }else if(accu.timeMin === stat.maxTime){
+            accu.timeMinId.push(stat.id);
+        }
+        accu.allTimes.push({ maxTime: stat.maxTime, id: stat.id });
+
+        return accu;
+    }, {allTimes: [], allTimesId: [], timeMax : 0, timeMaxId : [], timeMin : 0, timeMinId : []});
+
+    console.log('calculateTimes',calculateTimes.allTimes);
+
+    const averageTime = (calculateTimes.allTimes.reduce((sum, times) => sum + times.maxTime, 0) / calculateTimes.allTimes.length).toFixed(0);
+
+    const applyTimes = calculateTimes.allTimes.reduce((apply, allTime) => {
+        apply[allTime.maxTime] = (apply[allTime.maxTime] || 0)+1;
+        return apply;
+    }, {});
+
+    console.log('applyTimes',applyTimes);
+
+
+    console.log(`총 게임 횟수: ${statistics.length}`);
+    console.log(`사용자 총 승리 횟수: ${userWins.length}`);
+    console.log(`컴퓨터 총 승리 횟수: ${statistics.length - userWins.length}`);
+    console.log(`사용자가 승리한 게임 중 가장 많은 횟수: ${userMaxWin} / ID : ${userMaxWinIdText}`);
+    console.log(`사용자가 승리한 게임 중 가장 적은 횟수: ${userMinWin} / ID : ${userMinWinIdText}`);
+    console.log(`가장 큰 값으로 적용된 입력횟수 : ${calculateTimes.timeMax} / ID : ${calculateTimes.timeMaxId}`);
+    console.log(`가장 적은 값으로 적용된 입력횟수 : ${calculateTimes.timeMin} / ID : ${calculateTimes.timeMinId}`);
 
 
     //현선
-    // console.log(`적용된 입력횟수 평균: ${d}`);
+    console.log(`적용된 입력횟수 평균: ${averageTime}`);
     // console.log(`가장 많이 적용된 입력횟수: ${d} (게임 ID: ${id})`);
 
     //재욱

@@ -420,7 +420,7 @@ function calculateStatistics(statistics){
 
         return accu;
     }, {applyMaxTime: 0, applyMaxTimeId: []});
-    // console.log('calculateMaxTimes',calculateMaxTimes);
+    console.log('calculateMaxTimes',calculateMaxTimes);
 
     // 입력횟수 평균 값
     const averageTime = (calculateTimes.allTimes.reduce((sum, times) => sum + times.maxTime, 0) / calculateTimes.allTimes.length).toFixed(1);

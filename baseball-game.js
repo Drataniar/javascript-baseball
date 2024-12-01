@@ -425,6 +425,9 @@ function calculateStatistics(statistics){
     // 입력횟수 평균 값
     const averageTime = (calculateTimes.allTimes.reduce((sum, times) => sum + times.maxTime, 0) / calculateTimes.allTimes.length).toFixed(1);
 
+    const computerWinFrequency = checkMaxFrequency(computerWins,"maxTime");
+
+const userWinFrequency = checkMaxFrequency(userWins,"rounds");
 
     console.log(`총 게임 횟수: ${statistics.length}`);
     console.log(`사용자 총 승리 횟수: ${userWins.length}`);
@@ -440,8 +443,8 @@ function calculateStatistics(statistics){
     console.log(`가장 많이 적용된 입력횟수 : ${calculateMaxTimes.applyMaxTime} / ID : ${calculateMaxTimes.applyMaxTimeId}`);
 
     //재욱
-    console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${checkMaxFrequency(computerWins,"maxTime").maxFrequencyValue} / ID : ${checkMaxFrequency(computerWins,"maxTime").maxFrequencyIdArrayText}`);
-    console.log(`사용자가 가장 많이 승리한 입력횟수: ${checkMaxFrequency(userWins,"rounds").maxFrequencyValue} / ID : ${checkMaxFrequency(userWins,"rounds").maxFrequencyIdArrayText}`);
+    console.log(`컴퓨터가 가장 많이 승리한 입력횟수: ${computerWinFrequency.maxFrequencyValue} / ID : ${computerWinFrequency.maxFrequencyIdArrayText}`);
+  console.log(`사용자가 가장 많이 승리한 입력횟수: ${userWinFrequency.maxFrequencyValue} / ID : ${userWinFrequency.maxFrequencyIdArrayText}`);
 
     // 변수
     // 총 게임 횟수
